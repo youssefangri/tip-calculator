@@ -6,12 +6,17 @@ import {
   updateItemPrice,
   updateItemQuantity
 } from '../store/items/actions';
+import { selectItemSubTotal } from '../store/items/selectors';
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    total: parseInt(ownProps.price * ownProps.quantity)
-  };
-};
+// const mapStateToProps = (state, ownProps) => {
+//   return {
+//     total: parseInt(ownProps.price * ownProps.quantity)
+//   };
+// };
+
+const mapStateToProps = (state, ownProps) => ({
+  total: selectItemSubTotal(state, ownProps)
+});
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators(
