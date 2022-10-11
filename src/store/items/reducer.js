@@ -1,4 +1,10 @@
-import { ITEM_ADDED, ITEM_PRICE_UPDATED, ITEM_QUANTIY_UPDATED, ITEM_REMOVED } from './actions';
+import produce from 'immer';
+import {
+  ITEM_ADDED,
+  ITEM_PRICE_UPDATED,
+  ITEM_QUANTIY_UPDATED,
+  ITEM_REMOVED
+} from './actions';
 
 let id = 1;
 
@@ -8,18 +14,44 @@ export const initialItems = [
 ];
 
 export const reducer = (state = initialItems, action) => {
+  // if (action.type === ITEM_ADDED) {
+  //   const item = { uuid: id++, quantity: 1, ...action.payload };
+  //   return [...state, item];
+  // }
   if (action.type === ITEM_ADDED) {
-    const item = { uuid: id++, quantity: 1, ...action.payload };
-    return [...state, item];
+    return produce(state, (draftState) => {
+      const item = { uuid: id++, quantity: 1, ...action.payload };
+      draftState.push(item);
+    });
   }
   if (action.type === ITEM_REMOVED) {
     return state.filter((item) => item.uuid !== action.payload.uuid);
   }
+  // if (action.type === ITEM_PRICE_UPDATED) {
+  //   return state.map((item) =>
+  //     item.uuid !== action.payload.uuid
+  //       ? item
+  //       : { ...item, price: action.payload.price }
+  //   );
+  // }
   if (action.type === ITEM_PRICE_UPDATED) {
-    return state.map((item) => item.uuid !== action.payload.uuid ? item : {...item, price:action.payload.price} );
+    return produce(state, (draftState) => {
+      const item = draftState.find((item) => item.uuid === action.payload.uuid);
+      item.price = action.payload.price
+    });
   }
+  // if (action.type === ITEM_QUANTIY_UPDATED) {
+  //   return state.map((item) =>
+  //     item.uuid !== action.payload.uuid
+  //       ? item
+  //       : { ...item, quantity: action.payload.quantity }
+  //   );
+  // }
   if (action.type === ITEM_QUANTIY_UPDATED) {
-    return state.map((item) => item.uuid !== action.payload.uuid ? item : {...item, quantity:action.payload.quantity} );
+    return produce(state, (draftState) => {
+      const item = draftState.find((item) => item.uuid === action.payload.uuid);
+      item.quantity = action.payload.quantity
+    });
   }
   return state;
 };
